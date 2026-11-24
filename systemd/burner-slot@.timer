@@ -1,0 +1,10 @@
+[Unit]
+Description=burner: poll the queue for slot %i
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=20
+AccuracySec=2
+
+[Install]
+WantedBy=timers.target

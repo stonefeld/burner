@@ -1,0 +1,13 @@
+[Unit]
+Description=burner: slot %i, serves one job in a throwaway VM
+After=network-online.target libvirtd.service burner-firewall.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/burner/burner.py slot %i
+UMask=0077
+# The real limit is slots.timeout_min (internal alarm); this is the last safety net.
+TimeoutStartSec=3h
+TimeoutStopSec=180
+KillMode=mixed

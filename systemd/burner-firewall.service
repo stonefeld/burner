@@ -1,0 +1,14 @@
+[Unit]
+Description=burner: host filter for the CI networks
+Before=libvirtd.service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/burner/burner.py firewall
+RemainAfterExit=yes
+# Stopping it does not remove the filter: VMs have no autostart and every start checks it.
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+[Unit]
+Description=burner: status snapshot for unprivileged views (burner status / monitor)
+After=libvirtd.service burner-firewall.service
+
+[Service]
+ExecStart=/opt/burner/burner.py snapshot --loop
+Restart=always
+RestartSec=5
+Nice=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/run/burner
+RuntimeDirectory=burner
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
+
+[Install]
+WantedBy=multi-user.target

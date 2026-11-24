@@ -1,0 +1,59 @@
+# burner configuration. Anything left out takes the commented value shown here.
+# After changing [network] or [slots]: `sudo burner install`. After [vm] packages/provision: `sudo burner base`.
+# [cache.env], [[repos]] and VM sizes apply from the next job.
+
+[vm]
+# ubuntu = "noble"          # series of the official cloud image
+# vcpus = 2
+# memory_gib = 8
+# disk_gib = 60
+# cpu_quota = 2.0           # host CPUs the whole QEMU process may use (vCPUs + I/O)
+# apt packages baked into the base. Official Docker, git and curl are always there.
+# packages = ["git", "make", "curl", "jq", "unzip", "zip", "zstd", "build-essential", "pkg-config", "python3-venv"]
+# Your own script (host path), run as root at the end of the base build. For system
+# dependencies the CI takes for granted: Chromium libs, database clients...
+# provision = "/etc/burner/provision.sh"
+
+[slots]
+# count = 1                 # simultaneous VMs. Host RAM >= count * (memory_gib + 2) + its own
+# timeout_min = 45          # max VM lifetime; when it expires the VM is destroyed even if the job runs
+# idle_timeout_s = 180      # a registered runner that did not pick a job by then is discarded
+
+[network]
+# subnet = "10.203.0.0/16"  # one /24 per slot: .0 maintenance, .1..N slots. Must not clash with your LAN
+# bridge_prefix = "burner"  # bridges burner0, burner1...
+# dns = ["1.1.1.1", "8.8.8.8"]
+# tcp_ports = [80, 443]
+# ntp = true
+# Public destinations that must not be reachable either: your staging, production, fixed IPs.
+# block = ["203.0.113.7/32"]
+# forbidden_interfaces = ["tailscale0"]
+# Your connection's public IP is blocked automatically (NAT loopback to the router). [] disables it.
+# wan_observers = ["https://api.ipify.org", "https://checkip.amazonaws.com"]
+
+[cache]
+# gib = 80                  # virtual size of each repo's cache disk
+# max_gib = 60              # if it is bigger when promoted, the repo starts over without cache
+# buildkit_gib = 20         # cap of Docker's build cache (BuildKit GC)
+# work_dir = "/cache/runner/work"   # the runner's _work: checkout and downloaded actions stay cached
+
+# Variables every job sees (runner .env file). Added to the defaults:
+# AGENT_TOOLSDIRECTORY, XDG_CACHE_HOME (uv, pip, go), npm_config_cache,
+# npm_config_store_dir (pnpm) and PLAYWRIGHT_BROWSERS_PATH, all under /cache/runner.
+[cache.env]
+# GRADLE_USER_HOME = "/cache/runner/gradle"
+# CARGO_HOME = "/cache/runner/cargo"
+
+# One block per repo. Each repo has its own cache: they never mix.
+[[repos]]
+name = "owner/repo"
+app_id = 123456
+installation_id = 78901234
+key = "/etc/burner/apps/repo.pem"   # root:root 0600
+# label = "burner"                  # runs-on: [self-hosted, burner]
+# Only a successful push/schedule/workflow_dispatch job on these branches writes the cache.
+# trusted_branches = ["main"]
+# Empty: any workflow of the repo. Otherwise only these start VMs (and promote cache).
+# workflows = [".github/workflows/ci.yml"]
+# Repo variable holding the last heartbeat time, to fall back to ubuntu-latest when the host is down.
+# heartbeat = "BURNER_HEARTBEAT"

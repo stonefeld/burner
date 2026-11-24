@@ -1,0 +1,9 @@
+[Unit]
+Description=burner: discard orphan VMs, check the WAN, send the heartbeat
+After=libvirtd.service burner-firewall.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/burner/burner.py reap
+UMask=0077
+TimeoutStartSec=5min

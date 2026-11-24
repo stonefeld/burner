@@ -1,0 +1,10 @@
+[Unit]
+Description=burner: a fresh base every week (Ubuntu patches, current runner)
+
+[Timer]
+OnCalendar=Sun 04:00
+RandomizedDelaySec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

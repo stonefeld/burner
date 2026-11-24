@@ -1,0 +1,10 @@
+[Unit]
+Description=burner: rebuild and self-test the base image
+After=network-online.target libvirtd.service burner-firewall.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/burner/burner.py base
+UMask=0077
+TimeoutStartSec=3h
+KillMode=mixed
